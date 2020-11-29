@@ -1,5 +1,20 @@
 import numpy as np
-import random
+import math
+from unittest import TestCase
+
+
+def get_cost(data, label):
+    cost = 0
+    for pos, value in enumerate(data):
+        if pos == label:
+            cost += (1 - value)**2
+        else:
+            cost += (0 - value)**2
+
+    return cost
+
+def sigmoid(x):
+    return 1 / (1 + math.e**(-x))
 
 NUM_INPUTS = 4
 HIDDEN_LAYERS = 2
@@ -23,23 +38,49 @@ class DigitClassifier:
         hidden_to_output = np.random.rand(HIDDEN_LAYER_SIZE, NUM_OUTPUTS)
         self.weights.append(hidden_to_output)
 
-        print(self.weights)
+        print("Weights:\n", self.weights)
 
         # Initialize biases to 0
         for i in range(0, HIDDEN_LAYERS):
             hidden_biases = np.zeros(HIDDEN_LAYER_SIZE)
-            self.biases.append(hidden_to_hidden)
+            self.biases.append(hidden_biases)
         output_biases = np.zeros(NUM_OUTPUTS)
         self.biases.append(output_biases)
 
-        print(self.biases)
+        print("Biases:\n", self.biases)
+
+    def _classify_to_vector(self, data):
+        activations = []
+        current_layer_values = np.array(data)
+        next_layer_values = np.matmul(current_layer_values, self.weights[0])
+        print("First layer:")
+        print(current_layer_values)
+        print()
+        activations.append(next_layer_values)
+
+        for layer_pair in range(0, HIDDEN_LAYER_SIZE - 1):
+            current_layer_values = next_layer_values
+            next_layer_values = np.matmul(current_layer_values, self.weights[layer_pair + 1])
+            activations.append(next_layer_values)
+
+        current_layer_values = next_layer_values
+        next_layer_values = np.matmul(current_layer_values, self.weights[-1])
+        activations.append(next_layer_values)
+
+
+        print("Final Answer:")
+        print()
+
+        result = next_layer_values
+        print(result)
+        return result
 
     def classify(self, data):
-        input_vector = np.array(data)
-        current_layer_values = np.matmul(input_vector, self.weights[0])
-        print("First layer:")
-        print()
-        print(current_layer_values)
+        choice_vector = self._classify_to_vector(data)
+        print("Cost:", get_cost(choice_vector, 7))
+        result = np.argmax(choice_vector)
+
+        return result;
 
     def train(self, labeled_data_sets):
         weights = []
@@ -59,3 +100,7 @@ class DigitClassifier:
 
     def backpropagate(self, result, label, data):
         pass
+
+
+
+

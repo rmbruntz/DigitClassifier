@@ -30,5 +30,8 @@ def test(neural_net: DigitClassifier):
 
 
 #test(DigitClassifier())
+dc = DigitClassifier()
 
-DigitClassifier().classify([1, 1, 0, 0])
+print("Chosen:", dc.classify([1, 1, 0, 0]))
+
+

@@ -14,9 +14,6 @@ class DigitClassifierTest(unittest.TestCase):
         DigitClassifier.NUM_OUTPUTS = 2
 
     def test_all_zeroes(self):
-        dc = DigitClassifier()
-        self.assertEqual(dc.biases, [])
-        print(dc)
-
-
-unittest.main()
+        dc = DigitClassifier.DigitClassifier()
+        result = dc.classify([0, 0, 0, 0])
+        self.assertNotEqual(dc.biases, [])
