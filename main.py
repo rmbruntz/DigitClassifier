@@ -1,4 +1,5 @@
 import csv
+import pickle
 from digitclassifier.DigitClassifier import DigitClassifier
 
 NUM_TESTS = 50
@@ -37,6 +38,8 @@ def train(neural_net: DigitClassifier):
         try:
             with open('data\\mnist_train.csv', newline='') as test_file:
                 reader = csv.reader(test_file)
+                #for n in range(0, random.randint(0, 99)):
+                    #next(reader)
                 while True:
                     data_sets = []
                     for i in range(0, TRAINING_BATCH_SIZE):
@@ -54,6 +57,8 @@ def train(neural_net: DigitClassifier):
                     print("{} correct out of {}".format(num_correct, TRAINING_BATCH_SIZE))
         except StopIteration:
             pass
+        with open('data\\neural_net', mode='w') as net_state_file:
+            pickle.dump(dc, net_state_file)
 
 
 # test(DigitClassifier())

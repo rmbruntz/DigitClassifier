@@ -157,11 +157,16 @@ class DigitClassifier:
 
         # Normalize the vector length, then multiply by step size
         # And of course, don't forget to negate
-        weight_changes = [np.divide(layer_weight_changes, - total_change_vector_length / (STEP_VECTOR_SCALE)) for
-                          layer_weight_changes in weight_changes]
+        # Wrapped in a try to prevent invalid true_divide values - just skip the set
+        try:
+            weight_changes = [np.divide(layer_weight_changes, - total_change_vector_length / (STEP_VECTOR_SCALE)) for
+                              layer_weight_changes in weight_changes]
 
-        bias_changes = [np.divide(layer_bias_changes, - total_change_vector_length / (STEP_VECTOR_SCALE)) for
-                        layer_bias_changes in bias_changes]
+            bias_changes = [np.divide(layer_bias_changes, - total_change_vector_length / (STEP_VECTOR_SCALE)) for
+                            layer_bias_changes in bias_changes]
+        except RuntimeWarning:
+            weight_changes = [np.zeros(mat.shape) for mat in self.weights]
+            bias_changes = [np.zeros(arr.shape) for arr in self.biases]
 
         self.weights = merge_changes_into(weight_changes, self.weights)
         self.biases = merge_changes_into(bias_changes, self.biases)
