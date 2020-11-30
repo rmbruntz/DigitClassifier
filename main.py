@@ -90,7 +90,7 @@ try:
 except IOError:
     dc = DigitClassifier()
 
-test(dc)
+# test(dc)
 
-# atexit.register(save_network)
-# train(dc)
+atexit.register(save_network)
+train(dc)
