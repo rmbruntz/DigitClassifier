@@ -143,7 +143,7 @@ class DigitClassifier:
                 # print("Correct!")
                 correct += 1
 
-            if self.last_total_cost > 25 or result != label:
+            if self.last_total_cost > 12 or result != label or True:
                 requested_bias_changes, requested_weight_changes = self.get_adjustments(data, activations, label)
                 weight_changes = merge_changes_into(requested_weight_changes, weight_changes)
 
@@ -158,15 +158,16 @@ class DigitClassifier:
         # Normalize the vector length, then multiply by step size
         # And of course, don't forget to negate
         # Wrapped in a try to prevent invalid true_divide values - just skip the set
-        try:
-            weight_changes = [np.divide(layer_weight_changes, - total_change_vector_length / (STEP_VECTOR_SCALE)) for
-                              layer_weight_changes in weight_changes]
+        if total_change_vector_length > 0.1:
+            try:
+                weight_changes = [np.divide(layer_weight_changes, - total_change_vector_length * total_cost / (STEP_VECTOR_SCALE)) for
+                                  layer_weight_changes in weight_changes]
 
-            bias_changes = [np.divide(layer_bias_changes, - total_change_vector_length / (STEP_VECTOR_SCALE)) for
-                            layer_bias_changes in bias_changes]
-        except RuntimeWarning:
-            weight_changes = [np.zeros(mat.shape) for mat in self.weights]
-            bias_changes = [np.zeros(arr.shape) for arr in self.biases]
+                bias_changes = [np.divide(layer_bias_changes, - total_change_vector_length * total_cost / (STEP_VECTOR_SCALE)) for
+                                layer_bias_changes in bias_changes]
+            except RuntimeWarning:
+                weight_changes = [np.zeros(mat.shape) for mat in self.weights]
+                bias_changes = [np.zeros(arr.shape) for arr in self.biases]
 
         self.weights = merge_changes_into(weight_changes, self.weights)
         self.biases = merge_changes_into(bias_changes, self.biases)

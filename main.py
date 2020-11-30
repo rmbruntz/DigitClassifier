@@ -1,10 +1,18 @@
 import csv
 import pickle
+import atexit
+import random
 from digitclassifier.DigitClassifier import DigitClassifier
 
-NUM_TESTS = 50
+NUM_TESTS = 10000
 
 TRAINING_BATCH_SIZE = 100
+
+
+def save_network():
+    with open('data/neural_net.json', mode='wb') as net_state_file:
+        pickle.dump(dc, net_state_file)
+    print("\n\n\nNetwork config saved\n\n\n")
 
 
 def test(neural_net: DigitClassifier):
@@ -29,17 +37,29 @@ def test(neural_net: DigitClassifier):
                 correct += 1
             shown += 1
 
+            if test_number % 1000 == 0:
+                print("{} tests done".format(test_number))
+
             # print("{} shown so far, {} correct".format(shown, correct))
             # print()
 
+    print("{} / {}, {}%".format(correct, shown, correct/shown * 100))
+
 
 def train(neural_net: DigitClassifier):
+    first_pass = True
     while True:
         try:
             with open('data\\mnist_train.csv', newline='') as test_file:
                 reader = csv.reader(test_file)
-                #for n in range(0, random.randint(0, 99)):
-                    #next(reader)
+
+                # Start at a random point on the first pass
+                if first_pass:
+                    for n in range(0, 100 * random.randrange(0, 600)):
+                        next(reader)
+                    first_pass = False
+
+                a = 0
                 while True:
                     data_sets = []
                     for i in range(0, TRAINING_BATCH_SIZE):
@@ -55,12 +75,20 @@ def train(neural_net: DigitClassifier):
 
                     num_correct = neural_net.train(data_sets)
                     print("{} correct out of {}".format(num_correct, TRAINING_BATCH_SIZE))
+                    a += 1
         except StopIteration:
             pass
-        with open('data\\neural_net', mode='w') as net_state_file:
-            pickle.dump(dc, net_state_file)
 
 
 # test(DigitClassifier())
-dc = DigitClassifier()
-train(dc)
+dc = None
+try:
+    with open('data/neural_net.json', mode='rb') as net_state_file:
+        dc = pickle.load(net_state_file)
+except IOError:
+    dc = DigitClassifier()
+
+test(dc)
+
+# atexit.register(save_network)
+# train(dc)
