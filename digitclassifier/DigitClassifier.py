@@ -46,7 +46,7 @@ HIDDEN_LAYERS = 2
 HIDDEN_LAYER_SIZE = 16
 NUM_OUTPUTS = 10
 
-STEP_VECTOR_SCALE = 0.3
+STEP_VECTOR_SCALE = 0.1
 
 
 class DigitClassifier:
@@ -143,7 +143,7 @@ class DigitClassifier:
                 # print("Correct!")
                 correct += 1
 
-            if self.last_total_cost > 12 or result != label or True:
+            if self.last_total_cost > 10 or result != label:
                 requested_bias_changes, requested_weight_changes = self.get_adjustments(data, activations, label)
                 weight_changes = merge_changes_into(requested_weight_changes, weight_changes)
 

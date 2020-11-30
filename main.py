@@ -55,7 +55,7 @@ def train(neural_net: DigitClassifier):
 
                 # Start at a random point on the first pass
                 if first_pass:
-                    for n in range(0, 100 * random.randrange(0, 600)):
+                    for n in range(0, 100 * random.randrange(0, 500) + 50):
                         next(reader)
                     first_pass = False
 
@@ -63,6 +63,8 @@ def train(neural_net: DigitClassifier):
                 while True:
                     data_sets = []
                     for i in range(0, TRAINING_BATCH_SIZE):
+                        # for n in range(0, random.randint(0, 3)):
+                        #     next(reader)
                         line = next(reader)
                         label = int(line[0])
                         data = [int(x) / 256 for x in line[1:]]
