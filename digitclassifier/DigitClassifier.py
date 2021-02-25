@@ -42,11 +42,11 @@ def sum_changes(array_list):
 
 
 NUM_INPUTS = 28 * 28
-HIDDEN_LAYERS = 2
+HIDDEN_LAYERS = 4
 HIDDEN_LAYER_SIZE = 16
 NUM_OUTPUTS = 10
 
-STEP_VECTOR_SCALE = 0.07
+STEP_VECTOR_SCALE = 0.5
 
 
 class DigitClassifier:
@@ -143,7 +143,7 @@ class DigitClassifier:
                 # print("Correct!")
                 correct += 1
 
-            if self.last_total_cost > 7 or result != label:
+            if self.last_total_cost > 7 or result != label or True:
                 requested_bias_changes, requested_weight_changes = self.get_adjustments(data, activations, label)
                 weight_changes = merge_changes_into(requested_weight_changes, weight_changes)
 
@@ -160,10 +160,10 @@ class DigitClassifier:
         # Wrapped in a try to prevent invalid true_divide values - just skip the set
         if total_change_vector_length > 0.1:
             try:
-                weight_changes = [np.divide(layer_weight_changes, - total_change_vector_length * total_cost / (STEP_VECTOR_SCALE)) for
+                weight_changes = [np.divide(layer_weight_changes, - total_change_vector_length / (STEP_VECTOR_SCALE)) for
                                   layer_weight_changes in weight_changes]
 
-                bias_changes = [np.divide(layer_bias_changes, - total_change_vector_length * total_cost / (STEP_VECTOR_SCALE)) for
+                bias_changes = [np.divide(layer_bias_changes, - total_change_vector_length / (STEP_VECTOR_SCALE)) for
                                 layer_bias_changes in bias_changes]
             except RuntimeWarning:
                 weight_changes = [np.zeros(mat.shape) for mat in self.weights]

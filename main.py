@@ -3,6 +3,7 @@ import pickle
 import atexit
 import random
 from digitclassifier.DigitClassifier import DigitClassifier
+import graphics as Graphics
 
 NUM_TESTS = 10000
 
@@ -18,6 +19,8 @@ def save_network():
 def test(neural_net: DigitClassifier):
     shown = 0
     correct = 0
+
+    graphics = Graphics.GraphWin("Digit Classifier", 500, 508)
 
     with open('data\\mnist_test.csv', newline='') as test_file:
         reader = csv.reader(test_file)
@@ -90,7 +93,7 @@ try:
 except IOError:
     dc = DigitClassifier()
 
-# test(dc)
+test(dc)
 
-atexit.register(save_network)
-train(dc)
+# atexit.register(save_network)
+# train(dc)
